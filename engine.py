@@ -1,8 +1,90 @@
 import pygame
+from module3 import *
 pygame.init()
 
 navy = (0,0,128)
 cobalt = (61,89,171)
+class Highscore:
+    def __init__(self):
+        self.X = game.Width / 4
+        self.Y = game.Height / 10 + 100
+        self.Width = game.Width / 2
+        self.Level = "highscore"
+
+        self.name= row[0]
+        self.name2 = row2[0]  
+        self.name3 = row3[0]
+        self.name4 = row4[0]
+        self.name5 = row5[0]  
+
+        self.gamesp = str(row[1])
+        self.gamesp2 = str(row2[1])
+        self.gamesp3 = str(row3[1])
+        self.gamesp4 = str(row4[1])
+        self.gamesp5= str(row5[1])
+
+        self.gamesw = str(row[2])
+        self.gamesw2 = str(row2[2])
+        self.gamesw3 = str(row3[2])
+        self.gamesw4 = str(row4[2])
+        self.gamesw5= str(row5[2])
+
+        self.gamesl = str(row[3])
+        self.gamesl2 = str(row2[3])
+        self.gamesl3 = str(row3[3])
+        self.gamesl4 = str(row4[3])
+        self.gamesl5= str(row5[3])
+
+        self.button_height = 50
+        self.button_color = (0,0,128)
+        self.button_color_hover = (0, 0, 180)
+
+        self.Buttons = [
+        Button(self.X+650, self.Y+500, 280, 50, self.Menu, self.button_color, self.button_color_hover, "back to main menu")]
+
+    def Start(self): game.Level = "start"
+    def Menu(self): game.Level = "menu"
+    def Load(self): game.Level = "load"
+    def Instructions(self): game.Level = "instructions"
+    def Exit(self): game.Level = "exit"
+
+    def Draw(self):
+        Text_draw("Highscore", 60, self.X+230, self.Y-150)
+        Text_draw("Name", 40, self.X-50, self.Y-80)
+        Text_draw("Played", 40, self.X+200, self.Y-80)
+        Text_draw("Won", 40, self.X+500, self.Y-80)
+        Text_draw("Lost", 40, self.X+800, self.Y-80)
+
+        Text_draw("1", 40, self.X-150, self.Y-30)
+        Text_draw("2", 40, self.X-150, self.Y+10)
+        Text_draw("3", 40, self.X-150, self.Y+50)
+
+        Text_draw(self.name, 40, self.X-50, self.Y-30)
+        Text_draw(self.name2, 40, self.X-50, self.Y+10)
+        Text_draw(self.name3, 40, self.X-50, self.Y+50)
+        Text_draw(self.name4, 40,  self.X-50, self.Y+90)
+        Text_draw(self.name5, 40,  self.X-50, self.Y+130)
+
+        Text_draw(self.gamesp, 40, self.X+200, self.Y-30)
+        Text_draw(self.gamesp2, 40, self.X+200, self.Y+10)
+        Text_draw(self.gamesp3, 40, self.X+200, self.Y+50)
+        Text_draw(self.gamesp4, 40, self.X+200, self.Y+90)
+        Text_draw(self.gamesp5, 40, self.X+200, self.Y+130)
+
+        Text_draw(self.gamesw, 40, self.X+500, self.Y-30)
+        Text_draw(self.gamesw2, 40, self.X+500, self.Y+10)
+        Text_draw(self.gamesw3, 40, self.X+500, self.Y+50)
+        Text_draw(self.gamesw4, 40, self.X+500, self.Y+90)
+        Text_draw(self.gamesw5, 40, self.X+500, self.Y+130)
+
+        Text_draw(self.gamesl, 40, self.X+800, self.Y-30)
+        Text_draw(self.gamesl2, 40, self.X+800, self.Y+10)
+        Text_draw(self.gamesl3, 40, self.X+800, self.Y+50)
+        Text_draw(self.gamesl4, 40, self.X+800, self.Y+90)
+        Text_draw(self.gamesl5, 40, self.X+800, self.Y+130)
+
+        for button in self.Buttons:
+            button.Draw()
 
 class temp_card_holder:
     def __init__(self, name, id, desc, amount):
@@ -102,8 +184,7 @@ class Deck:
     def Draw(self):
         for card in self.Cards:
             if card == "": break
-            else: card.Draw()
-        
+            else: card.Draw()        
         
 class Hand:
     def __init__(self, x, y, player):
@@ -555,7 +636,7 @@ def Text_draw(text, size, x, y, textcolor=(255,255,255)):
     game.Display.blit(screen_text, [x,y])
 
 game = Game()
-
+highscore = Highscore()
 game.loop()
 
 pygame.quit()
