@@ -4,6 +4,127 @@ pygame.init()
 navy = (0,0,128)
 cobalt = (61,89,171)
 
+class temp_card_holder:
+    def __init__(self, name, id, desc, amount):
+        self.Name = name
+        self.ID = id
+        self.Desc = desc
+        self.Amount = amount
+
+class Card:
+    def __init__(self, x, y, width, height, name, desc, function, i, deck):
+        self.X = x
+        self.Y = y
+        self.Width = width
+        self.Height = height
+        self.Name = name
+        self.Desc = desc
+        self.Function = function
+        self.Active = True
+        self.Deck = deck
+        self.ID = i
+
+        self.Pressed = False
+        self.Pressing = False
+    
+    def Hover(self):
+        if self.X < pygame.mouse.get_pos()[0] < self.X + self.Width:
+            if self.Y < pygame.mouse.get_pos()[1] < self.Y + self.Height: return True
+        return False
+    
+    def Click(self): return pygame.mouse.get_pressed()[0]
+
+    def Draw(self):
+        if self.Active:
+            if self.Hover():
+                # pygame.blit(game.Display, pygame.image.load("images\\cards\\" + self.name + "hover.png"), [self.X, self.Y])
+                pygame.draw.rect(game.Display, (100,100,100), (self.X, self.Y, self.Width, self.Height))
+                Text_draw(str(self.ID), 15, self.X, self.Y-15)
+                Text_draw(self.Name, 15, self.X, self.Y - 40)
+                self.Pressing = self.Click()
+                if self.Pressing:
+                    self.Pressed = True
+                    self.Pressing = False
+                else:
+                    if self.Pressed:
+                        self.Function()
+                        self.Deck.Remove_card(self.ID)
+                        self.Pressed = False
+
+
+            else:
+                pygame.draw.rect(game.Display, (50,50,50), (self.X, self.Y, self.Width, self.Height))
+                Text_draw(str(self.ID), 15, self.X, self.Y-15)
+                Text_draw(self.Name, 10, self.X, self.Y - 40)
+                # pygame.blit(game.Display, pygame.image.load("images\\cards\\" + self.name + "active.png"), [self.X, self.Y])
+        else:
+            # pygame.blit(game.Display, pygame.image.load("images\\cards\\" + self.name + "inactive.png"), [self.X, self.Y])
+            pygame.draw.rect(game.Display, (255,0,0), (self.X, self.Y, self.Width, self.Height))
+
+class Deck:
+    def __init__(self, x, y, player, limit):
+        self.X = x
+        self.Y = y
+        self.Player = player
+        self.Limit = limit
+
+        self.Cards = [""] * self.Limit
+    
+    def Add_card(self, name, desc, function):
+        i = 0
+        x = self.X
+        y = self.Y
+        w = 50
+        h = 100
+
+        for card in self.Cards:
+            if card == "":
+                self.Cards[i] = Card(x, y, w, h, name, desc, function, i, self)
+                break
+            x = x + w + 10
+            i += 1
+
+    def Remove_card(self, element):
+        del self.Cards[element]
+        for i in range(element, self.Limit - 1):
+            if self.Cards[i] != "":
+                self.Cards[i].ID -= 1
+                self.Cards[i].X -= self.Cards[i].Width + 10
+        self.Cards.append("")
+    
+    def Activate(self):
+        for card in self.Cards:
+            if card == "": break
+            else:
+                if card.Active: card.Active = False
+                else: card.Active = True
+
+    def Draw(self):
+        for card in self.Cards:
+            if card == "": break
+            else: card.Draw()
+        
+        
+class Hand:
+    def __init__(self, x, y, player):
+        self.X = x
+        self.Y = y
+        self.Player = player
+
+        self.Decks = [Deck(self.X, self.Y, self.Player, 6), Deck(self.X, self.Y, self.Player, 7), Deck(self.X, self.Y, self.Player, 8)]
+        self.Normal = self.Decks[0]
+        self.Traps = self.Decks[1]
+        self.Special = self.Decks[2]
+    
+    def Activate(self):
+        for deck in self.Decks:
+            deck.Activate()
+
+
+    def Draw(self):
+        for deck in self.Decks:
+            deck.Draw()
+
 class Mine:
     def __init__(self, x, y, player):
         self.X = x
@@ -27,11 +148,30 @@ class Options:
     def __init__(self,x,y):
         self.X = x
         self.Y = y
+        self.Menu_x = self.X
+        self.Menu_y = self.Y + 100
+        self.Stats_x = self.X
+        self.Stats_y = self.Y
 
         self.Caption = None
+        self.Boat_class = None
+        self.Boat_range_att = None
+        self.Boat_range_def = None
+        self.Boat_moves = None
+        self.Boat_health = None
+        self.Boat_perks = None
+
         self.Menu = None
         self.Show_sub_menu = False
         self.Sub_menu = None
+    
+    def Add_boat(self, length, attrange, defrange, moves, health, perks):
+        self.Boat_class = length
+        self.Boat_range_att = attrange
+        self.Boat_range_def = defrange
+        self.Boat_moves = moves
+        self.Boat_health = health
+        self.Boat_perks = perks
 
     def Add_menu(self, caption, menu, submenu=None):
         self.Caption = caption
@@ -44,10 +184,25 @@ class Options:
         self.Sub_menu = None
         self.Show_sub_menu = False
 
+        self.Boat_class = None
+        self.Boat_range_att = None
+        self.Boat_range_def = None
+        self.Boat_moves = None
+        self.Boat_health = None
+        self.Boat_perks = None
 
     def Draw(self):
         if not self.Menu == None:
             Text_draw(self.Caption, 40, self.X, self.Y-40)
+
+            if self.Boat_class != None:
+                Text_draw("Class: " + str(self.Boat_class), 25, self.Stats_x, self.Stats_y)
+                Text_draw("Moves: " + str(self.Boat_moves), 25, self.Stats_x, self.Stats_y + 25)
+                Text_draw("Def Range: " + str(self.Boat_range_def), 25, self.Stats_x, self.Stats_y + 50)
+                Text_draw("Health: " + str(self.Boat_health), 25, self.Stats_x + 150, self.Stats_y)
+                Text_draw("Perks: " + str(self.Boat_perks), 25, self.Stats_x + 150, self.Stats_y + 25)
+                Text_draw("Att Range: " + str(self.Boat_range_att), 25, self.Stats_x + 150, self.Stats_y + 50)
+
             self.Menu.Draw()
             if not self.Sub_menu == None:
                 if self.Show_sub_menu:
@@ -68,13 +223,14 @@ class Boat:
 
         self.Name = name
         self.Health = self.Length
+        self.Perks = None
 
         self.Menu = grid.Menu
 
-        self.Menu_actions = Container(self.Menu.X, self.Menu.Y, 80, 100, 25, 0)
+        self.Menu_actions = Container(self.Menu.Menu_x, self.Menu.Menu_y, 80, 100, 25, 0)
         self.Menu_actions.Add_button(navy, cobalt, self.Show_submenu, "Movement")
         self.Menu_actions.Add_button(navy, cobalt, self.Attack, "Attack")
-        self.Menu_actions_move = Container(self.Menu.X + self.Menu_actions.Width, self.Menu_actions.Y, 80, 100, 25, 0)
+        self.Menu_actions_move = Container(self.Menu.Menu_x + self.Menu_actions.Width, self.Menu_actions.Y, 80, 100, 25, 0)
         self.Menu_actions_move.Add_button(navy, cobalt, self.Move, "Move")
         self.Menu_actions_move.Add_button(navy, cobalt, self.Stance_change, "stance")
     
@@ -87,7 +243,9 @@ class Boat:
                 grid.Tiles[self.X][y]
     
     def Show_submenu(self): self.Menu.Show_sub_menu = True
-    def Show_menu(self): self.Menu.Add_menu(self.Name, self.Menu_actions, self.Menu_actions_move)
+    def Show_menu(self):
+        self.Menu.Add_menu(self.Name, self.Menu_actions, self.Menu_actions_move)
+        self.Menu.Add_boat(self.Length, self.Range_att, self.Range_def, self.Movement, self.Health, self.Perks)
     def Attack(self):
         if self.Stance == "defense":
             for x in range(self.X, self.X + self.Length):
@@ -111,23 +269,24 @@ class Boat:
                             
         self.Menu.Clear()
     def Move(self):
-        if self.Stance == "defense":
-            for boat_tile in range(self.X, self.X + self.Length):
-                y = self.Y - self.Movement
-                a = boat_tile - self.Movement
+        if self.Stance == "attack":
+            for boat_tile in range(self.Y, self.Y + self.Length):
+                x = self.X - (self.Movement - self.Length + 1)
+                y = boat_tile - self.Movement
+                a = 1
                 b = self.Movement
-                x = 1
-                while y <= self.Y + self.Movement:
-                    for i in range(0,x):
-                        if not(a+b+i < 0) and not(a+b+i > 19) and not(y < 0) and not(y > 19):
-                            if not(y == self.Y and a + b + i == self.X + self.Length - 1):
-                                grid.Tiles[a+b+i][y].Click(self.Move_to, (255,255,153), self.Length, self.Stance)
-                    if y >= self.Y:
-                        x -= 2
+
+                while y <= boat_tile + self.Movement:
+                    for i in range(0,a):
+                        if not(x+b+i < 0) and not(x+b+i > 19) and not(y < 0) and not(y > 19 - self.Length + 1):
+                            if not(y == self.Y and x+b+i == self.X + self.Length - 1):
+                                grid.Tiles[x+b+i][y].Click(self.Move_to, (255,255,153), self.Length, self.Stance)
+                    if y >= boat_tile:
                         b += 1
+                        a -= 2
                     else:
-                        x += 2
                         b -= 1
+                        a += 2
                     y += 1
 
         self.Menu.Clear()
@@ -139,20 +298,23 @@ class Boat:
         self.Menu.Clear()
 
     def Move_to(self,x,y):
-        if self.Stance == "defense":
+        if self.Stance == "attack":
             self.X = x - self.Length + 1
             self.Y = y
-            self.Pos[0] = grid.Tiles[x - self.Length + 1][y].X
-            self.Pos[1] = grid.Tiles[x - self.Length + 1][y].Y
+            self.Pos[0] = grid.Tiles[x][y].X
+            self.Pos[1] = grid.Tiles[x][y].Y
 
     def Stance_change(self):
         if self.Stance == "attack":
-            self.Stance = "defense"
-            self.Pos[0] = grid.Tiles[self.X][self.Y].X
+            if self.X < self.Length - 1:
+                print("stance changing is not allowed here")
+            else:
+                self.Stance = "defense"
+                self.Pos[0] = grid.Tiles[self.X][self.Y].X
         else:
             self.Stance = "attack"
             self.Pos[0] = grid.Tiles[self.X + self.Length - 1][self.Y].X
-        
+
         self.Menu.Clear()
 
     def Hover(self):
@@ -207,21 +369,20 @@ class Tile:
             if self.Y < pygame.mouse.get_pos()[1] < self.Y + self.Size: return True
         return False
     def Ghost(self):
-        if self.Function_boat[1] == "defense":
-            x = self.X - (self.Function_boat[0] - 1) * self.Size
-            y = self.Y
-        else:
-            x = self.X
-            y = self.Y
-        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(self.Function_boat[0]) + "\\" + str(self.Function_boat[1]) + ".png"), [x,y])
+        if self.Function_boat != None and self.Hover():
+            if self.Function_boat[1] == "defense":
+                x = self.X - (self.Function_boat[0] - 1) * self.Size
+                y = self.Y
+            else:
+                x = self.X
+                y = self.Y
+            pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(self.Function_boat[0]) + "\\" + str(self.Function_boat[1]) + ".png"), [x,y])
 
     def Draw(self):
         pygame.draw.rect(game.Display, self.Color, (self.X, self.Y, self.Size, self.Size))
         pygame.draw.lines(game.Display, (100,100,100), True, [(self.X,self.Y), (self.X+self.Size,self.Y), (self.X+self.Size,self.Y+self.Size), (self.X,self.Y+self.Size)],2)
         
         if self.Hover():
-            if self.Function_boat != None:
-                self.Ghost()
             if pygame.mouse.get_pressed()[0]:
                 if self.Function == None:
                     self.Menu.Clear()
@@ -262,6 +423,11 @@ class Grid:
         for y in range(0, self.Size):
             for x in range(0, self.Size):
                 self.Tiles[x][y].Draw()
+        
+        for y in range(0, self.Size):
+            for x in range(0, self.Size):
+                self.Tiles[x][y].Ghost()
+
         self.Menu.Draw()
 
 class Animation:
@@ -379,8 +545,6 @@ class Game:
                     if event.type == pygame.QUIT:
                         self.Exit = True
                 self.draw()
-                grid.Draw()
-                boat.Draw()
                 pygame.display.update()
                 self.tick()
             else: self.Exit = True
@@ -391,16 +555,6 @@ def Text_draw(text, size, x, y, textcolor=(255,255,255)):
     game.Display.blit(screen_text, [x,y])
 
 game = Game()
-
-
-def function():
-    print("hoi")
-
-grid = Grid(50,50,20,25,Options(100 + 20 * 25, 100))
-boat = Boat(2,2,2)
-boat2 = Boat(5,6,4)
-boat3 = Boat(12,10,3)
-
 
 game.loop()
 
