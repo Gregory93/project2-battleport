@@ -4,6 +4,26 @@ pygame.init()
 
 navy = (0,0,128)
 cobalt = (61,89,171)
+navy = (0,0,128)
+cobalt = (61,89,171)
+
+class Player_holder:
+    def __init__(self, player1, player2):
+        self.Player1 = player1
+        self.Player2 = player2
+
+        self.Player = self.Player1
+    
+
+    def Change_player(self):
+        if self.Player == self.Player1:
+            self.Player = self.Player2
+        else:
+            self.Player = self.Player1
+
+    def Draw(self):
+        Text_draw(self.Player, 50, 500, 500)
+
 class Highscore:
     def __init__(self):
         self.X = game.Width / 4
@@ -42,11 +62,7 @@ class Highscore:
         self.Buttons = [
         Button(self.X+650, self.Y+500, 280, 50, self.Menu, self.button_color, self.button_color_hover, "back to main menu")]
 
-    def Start(self): game.Level = "start"
     def Menu(self): game.Level = "menu"
-    def Load(self): game.Level = "load"
-    def Instructions(self): game.Level = "instructions"
-    def Exit(self): game.Level = "exit"
 
     def Draw(self):
         Text_draw("Highscore", 60, self.X+230, self.Y-150)
@@ -85,7 +101,6 @@ class Highscore:
 
         for button in self.Buttons:
             button.Draw()
-
 class Menu_bar:
     def __init__(self):
         self.X = 0
@@ -93,22 +108,28 @@ class Menu_bar:
         self.Width = game.Width
         self.Height = game.Height / 20
         self.Color = cobalt
+
+        self.end_turn = Button(self.Width-300, self.Y, 150, self.Height, self.End_turn, navy, cobalt, "End turn", False, 35)
+        self.pause_menu = Button(self.Width-150, self.Y, 150, self.Height, self.Menu, navy, cobalt, "Pause", False, 35)
     
     def End_turn(self):
         for b in (boat, boat2, boat3):
             b.Moves = b.Movement
+            b.Attacked = False
         grid.Clear()
         grid.Menu.Clear()
+        player_holder.Change_player()
     
     def Menu(self):
         game.Level = "menu2"
 
     def Draw(self):
         pygame.draw.rect(game.Display, self.Color, [self.X, self.Y, self.Width, self.Height])
-        end_turn = Button(self.Width-150, self.Y, 150, self.Height, self.End_turn, navy, cobalt, "End turn", False, 30)
-        pause_menu = Button(self.Width-300, self.Y, 150, self.Height, self.Menu, navy, cobalt, "Pause menu", False, 30)
-        end_turn.Draw()
-        pause_menu.Draw()
+        self.end_turn.Draw()
+        self.pause_menu.Draw()
+        pygame.draw.line(game.Display, (100,100,100), (self.end_turn.X, self.end_turn.Y), (self.end_turn.X, self.Height), 2)
+        pygame.draw.line(game.Display, (100,100,100), (self.pause_menu.X, self.pause_menu.Y), (self.pause_menu.X, self.Height), 2)
+        pygame.draw.line(game.Display, (100,100,100), (self.X, self.Height), (self.Width, self.Height), 3)
 
 class temp_card_holder:
     def __init__(self, name, id, desc, amount):
@@ -255,12 +276,21 @@ class Boat_menu:
         self.X = x
         self.Y = y
         self.Boat = None
+        self.a = None
+        self.m = None
+        self.s = None
         
     def Add_boat(self, boat):
         self.Boat = boat
+        self.a = Button(self.X, self.Y+90, 85, 30, self.Boat.Attack, navy, cobalt, "Attack")
+        self.m = Button(self.X+85, self.Y+90, 85, 30, self.Boat.Move, navy, cobalt, "Move")
+        self.s = Button(self.X+170, self.Y+90, 85, 30, self.Boat.Stance_change, navy, cobalt, "Stance")
     
     def Clear(self):
         self.Boat = None
+        self.a = None
+        self.m = None
+        self.s = None
     
     def Draw(self):
         if self.Boat != None:
@@ -268,26 +298,30 @@ class Boat_menu:
             Text_draw("Health: " + str(self.Boat.Health), 25, self.X, self.Y + 40)
             Text_draw("Moves: " + str(self.Boat.Moves), 25, self.X + 100, self.Y + 40)
             Text_draw("Perks: " + str(self.Boat.Perks), 25, self.X, self.Y + 65)
-        
-            a = Button(self.X, self.Y+90, 85, 30, self.Boat.Attack, navy, cobalt, "Attack")
-            m = Button(self.X+85, self.Y+90, 85, 30, self.Boat.Move, navy, cobalt, "Move")
-            s = Button(self.X+170, self.Y+90, 85, 30, self.Boat.Stance_change, navy, cobalt, "Stance")
-            a.Draw()
-            m.Draw()
-            s.Draw()
+            if self.a != None:
+                self.a.Draw()
+                if self.m != None:
+                    self.m.Draw()
+                    if self.s != None:
+                        self.s.Draw()
 
 class Boat:
-    def __init__(self, x, y, length, name="unnamed boat"):
-        self.X = x - (length - 1)
+    def __init__(self, x, y, length, player="blue", name="unnamed boat"):
+        self.Player = player
+        self.X = x
         self.Y = y
+        if self.Player == "blue":
+            self.Pos = [grid.Tiles[x][y].X, grid.Tiles[x][y].Y]
+        else:
+            self.Pos = [grid.Tiles[x][y].X, grid.Tiles[x][y - (length - 1)].Y]
         self.Length = length
         self.Stance = "attack"
-        self.Pos = [grid.Tiles[x][y].X, grid.Tiles[x][y].Y]
 
         self.Movement = 5 - self.Length
         self.Moves = self.Movement
         self.Range_def = self.Length + 1
         self.Range_att = self.Length
+        self.Attacked = False
 
         self.Name = name
         self.Health = self.Length
@@ -297,56 +331,87 @@ class Boat:
     
     def Tell_tile(self):
         if self.Stance == "defense":
-            for x in range(self.X, self.X - self.Length + 1):
-                grid.Tiles[x][self.Y]
+            if self.Player == "blue":
+                for x in range(self.X, self.X - self.Length, -1):
+                    grid.Tiles[x][self.Y].Color = (100,100,255)
+            else:
+                for x in range(self.X, self.X + self.Length):
+                    grid.Tiles[x][self.Y].Color = (255,100,100)
         else:
-            for y in range(self.Y, self.Y + self.Length - 1):
-                grid.Tiles[self.X][y]
+            if self.Player == "blue":
+                for y in range(self.Y, self.Y + self.Length):
+                    grid.Tiles[self.X][y].Color = (100,100,255)
+            else:
+                for y in range(self.Y, self.Y - self.Length, -1):
+                    grid.Tiles[self.X][y].Color = (255,100,100)
+
     
     def Attack(self):
-        if self.Stance == "defense":
-            for x in range(self.X, self.X + self.Length):
-                y = self.Y - self.Range_def
-                for i in range(y, self.Y + self.Range_def + 1):
-                    if not(i < 0) and not(i > 19):
-                        if i != self.Y:
-                            grid.Tiles[x][i].Click(self.Attack_on, (204,0,0))
-        else:
-            for Y in range(self.Y, self.Y + self.Length):
-                X = self.X + self.Length - 1
-                y = Y - self.Range_att
-                while y <= Y + self.Range_att:
-                    x = X - self.Range_att
-                    while x <= X + self.Range_att:
-                        if not(self.Y <= y < self.Y + self.Length and x == X):
-                            if x == X or y == Y:
-                                if not(x < 0) and not(x > 19) and not(y < 0) and not(y > 19):
-                                    grid.Tiles[x][y].Click(self.Attack_on, (204,0,0))
-                        x = x + 1
-                    y = y + 1
-                            
-        self.Menu.Clear()
+        if not self.Attacked:
+            if self.Stance == "defense":
+                if self.Player == "blue":
+                    for x in range(self.X - (self.Length - 1), self.X + 1):
+                        y = self.Y - self.Range_def
+                        for i in range(y, self.Y + self.Range_def + 1):
+                            if not(i < 0) and not(i > 19):
+                                if i != self.Y:
+                                    grid.Tiles[x][i].Click(self.Attack_on, (204,0,0))
+                else:
+                    for x in range(self.X, self.X + self.Length):
+                        y = self.Y - self.Range_def
+                        for i in range(y, self.Y + self.Range_def + 1):
+                            if not(i < 0) and not(i > 19):
+                                if i != self.Y:
+                                    grid.Tiles[x][i].Click(self.Attack_on, (204,0,0))
+
+            else:
+                if self.Player == "blue":
+                    for Y in range(self.Y, self.Y + self.Length):
+                        X = self.X
+                        y = Y - self.Range_att
+                        while y <= Y + self.Range_att:
+                            x = X - self.Range_att
+                            while x <= X + self.Range_att:
+                                if not(self.Y <= y < self.Y + self.Length and x == X):
+                                    if x == X or y == Y:
+                                        if not(x < 0) and not(x > 19) and not(y < 0) and not(y > 19):
+                                            grid.Tiles[x][y].Click(self.Attack_on, (204,0,0))
+                                x = x + 1
+                            y = y + 1
+                else:
+                    for Y in range(self.Y - (self.Length - 1), self.Y + 1):
+                        X = self.X
+                        y = Y - self.Range_att
+                        while y <= Y + self.Range_att:
+                            x = X - self.Range_att
+                            while x <= X + self.Range_att:
+                                if not(self.Y <= y < self.Y - self.Length and x == X):
+                                    if x == X or y == Y:
+                                        if not(x < 0) and not(x > 19) and not(y < 0) and not(y > 19):
+                                            grid.Tiles[x][y].Click(self.Attack_on, (204,0,0))
+                                x = x + 1
+                            y = y + 1
+
+            self.Menu.Clear()
     def Move(self):
         if not self.Moves <= 0:
-            if self.Stance == "attack":
-                for boat_tile in range(self.Y, self.Y + self.Length):
-                    x = self.X - (self.Moves - self.Length + 1)
-                    y = boat_tile - self.Moves
-                    a = 1
-                    b = self.Moves
+            x = self.X - (self.Moves)
+            y = self.Y - self.Moves
+            a = 1
+            b = self.Moves
 
-                    while y <= boat_tile + self.Moves:
-                        for i in range(0,a):
-                            if not(x+b+i < 0) and not(x+b+i > 19) and not(y < 0) and not(y > 19 - self.Length + 1):
-                                if not(y == self.Y and x+b+i == self.X + self.Length - 1):
-                                    grid.Tiles[x+b+i][y].Click(self.Move_to, (255,255,153), self.Length, self.Stance)
-                        if y >= boat_tile:
-                            b += 1
-                            a -= 2
-                        else:
-                            b -= 1
-                            a += 2
-                        y += 1
+            while y <= self.Y + self.Moves:
+                for i in range(0,a):
+                    if not(x+b+i < 0) and not(x+b+i > 19) and not(y < 0) and not(y > 19 - self.Length + 1):
+                        if not(y == self.Y and x+b+i == self.X):
+                            grid.Tiles[x+b+i][y].Click(self.Move_to, (255,255,153), self.Length, self.Stance)
+                if y >= self.Y:
+                    b += 1
+                    a -= 2
+                else:
+                    b -= 1
+                    a += 2
+                y += 1
             self.Menu.Clear()
 
     def Attack_on(self,x,y):
@@ -354,10 +419,11 @@ class Boat:
         shot = pygame.mixer.Sound("sounds\\boat_shot.wav")
         shot.play()
         self.Menu.Clear()
+        self.Attacked = True
 
     def Move_to(self,x,y):
-        if x < self.X - (self.Length - 1): mx = self.X - (self.Length - 1) - x
-        elif x > self.X - (self.Length - 1): mx = x - self.X - (self.Length - 1)
+        if x < self.X: mx = self.X - x
+        elif x > self.X: mx = x - self.X
         else: mx = 0
 
         if y < self.Y: my = self.Y - y
@@ -367,23 +433,47 @@ class Boat:
         m = mx + my
         self.Moves = self.Moves - m
 
-        self.X = x - self.Length + 1
+        self.X = x
         self.Y = y
         self.Pos[0] = grid.Tiles[x][y].X
-        self.Pos[1] = grid.Tiles[x][y].Y
+        if self.Player == "blue":
+            self.Pos[1] = grid.Tiles[x][y].Y
+        else:
+            self.Pos[1] = grid.Tiles[x][y - (self.Length - 1)].Y
 
     def Stance_change(self):
         if self.Moves > 0:
-            if self.Stance == "attack":
-                if self.X < self.Length - 1:
-                    print("stance changing is not allowed here")
+            moved = True
+            if self.Player == "blue":
+                if self.Stance == "attack":
+                    if self.X < self.Length - 1:
+                        moved = False
+                        print("FAILED TO CHANGE STANCE")
+                    else:
+                        self.Stance = "defense"
+                        self.Pos[0] = grid.Tiles[self.X - (self.Length - 1)][self.Y].X
                 else:
-                    self.Stance = "defense"
-                    self.Pos[0] = grid.Tiles[self.X][self.Y].X
+                    if self.X > 19 + (self.Length - 1):
+                        moved = False
+                        print("FAILED TO CHANGE STANCE")
+                    else:
+                        self.Stance = "attack"
+                        self.Pos[0] = grid.Tiles[self.X][self.Y].X
             else:
-                self.Stance = "attack"
-                self.Pos[0] = grid.Tiles[self.X + self.Length - 1][self.Y].X
-            
+                if self.Stance == "attack":
+                    self.Stance = "defense"
+                    self.Pos[1] = grid.Tiles[self.X][self.Y].Y
+                else:
+                    self.Stance = "attack"
+                    self.Pos[1] = grid.Tiles[self.X][self.Y - (self.Length - 1)].Y
+            if moved: self.Moves -= 1
+            grid.Clear()
+                
+
+
+
+
+
             self.Moves -= 1
             self.Menu.Clear()
 
@@ -402,11 +492,11 @@ class Boat:
             grid.Clear()
             self.Menu.Add_boat(self)
 
-
-        if self.Stance == "attack":
-            pygame.Surface.blit(game.Display,  pygame.image.load('images\\boats\\' + str(self.Length) + '\\attack.png'), [grid.Tiles[self.X + self.Length - 1][self.Y].X, self.Pos[1]])
+        if self.Player == "blue":
+                pygame.Surface.blit(game.Display,  pygame.image.load('images\\boats\\' + str(self.Length) + '\\' + self.Stance + '.png'), [self.Pos[0], self.Pos[1]])
         else:
-            pygame.Surface.blit(game.Display,  pygame.image.load('images\\boats\\' + str(self.Length) + '\\defense.png'), [self.Pos[0], self.Pos[1]])
+                pygame.Surface.blit(game.Display,  pygame.image.load('images\\boats\\' + str(self.Length) + '\\' + self.Stance + '_red.png'), [self.Pos[0], self.Pos[1]])
+        self.Tell_tile()
         
 class Tile:
     def __init__(self, x, y, pos, size, menu):
@@ -587,7 +677,14 @@ class Button:
                             self.Pressed = True
                         self.Pressing = False
             else:
-                if self.Click(): self.Function()
+                self.Pressing = self.Click()
+                if self.Pressing:
+                    self.Pressed = True
+                    self.Pressing = False
+                else:
+                    if self.Pressed == True:
+                        self.Function()
+                        self.Pressed = False
 
         else:
             pygame.draw.rect(game.Display, self.Color, (self.X, self.Y, self.Width, self.Height))
@@ -617,6 +714,13 @@ class Game:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         self.Exit = True
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_1:
+                            hand.Normal.Add_card(fmj_upgrade.Name, fmj_upgrade.Desc, testf)
+                        if event.key == pygame.K_2:
+                            hand.Normal.Add_card(advanced_rifling.Name, advanced_rifling.Desc, testf)
+                        if event.key == pygame.K_3:
+                            hand.Activate()
                 self.draw()
                 pygame.display.update()
                 self.tick()
@@ -628,6 +732,7 @@ def Text_draw(text, size, x, y, textcolor=(255,255,255)):
     game.Display.blit(screen_text, [x,y])
 
 game = Game()
+
 game.loop()
 
 pygame.quit()
