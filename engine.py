@@ -56,8 +56,8 @@ class Highscore:
         self.gamesl5= str(row5[3])
 
         self.button_height = 50
-        self.button_color = (0,0,128)
-        self.button_color_hover = (0, 0, 180)
+        self.button_color = (224,224,224)
+        self.button_color_hover = (160, 160, 160)
 
         self.Buttons = [
         Button(self.X+650, self.Y+500, 280, 50, self.Menu, self.button_color, self.button_color_hover, "back to main menu")]
@@ -65,39 +65,33 @@ class Highscore:
     def Menu(self): game.Level = "menu"
 
     def Draw(self):
-        Text_draw("Highscore", 60, self.X+230, self.Y-150)
-        Text_draw("Name", 40, self.X-50, self.Y-80)
-        Text_draw("Played", 40, self.X+200, self.Y-80)
-        Text_draw("Won", 40, self.X+500, self.Y-80)
-        Text_draw("Lost", 40, self.X+800, self.Y-80)
+        Text_draw("1", 40, self.X-200, self.Y+50)
+        Text_draw("2", 40, self.X-200, self.Y+90)
+        Text_draw("3", 40, self.X-200, self.Y+130)
 
-        Text_draw("1", 40, self.X-150, self.Y-30)
-        Text_draw("2", 40, self.X-150, self.Y+10)
-        Text_draw("3", 40, self.X-150, self.Y+50)
+        Text_draw(self.name, 40, self.X-85, self.Y+50)
+        Text_draw(self.name2, 40, self.X-85, self.Y+90)
+        Text_draw(self.name3, 40, self.X-85, self.Y+130)
+        Text_draw(self.name4, 40,  self.X-85, self.Y+170)
+        Text_draw(self.name5, 40,  self.X-85, self.Y+210)
 
-        Text_draw(self.name, 40, self.X-50, self.Y-30)
-        Text_draw(self.name2, 40, self.X-50, self.Y+10)
-        Text_draw(self.name3, 40, self.X-50, self.Y+50)
-        Text_draw(self.name4, 40,  self.X-50, self.Y+90)
-        Text_draw(self.name5, 40,  self.X-50, self.Y+130)
+        Text_draw(self.gamesp, 40, self.X+120, self.Y+50)
+        Text_draw(self.gamesp2, 40, self.X+120, self.Y+90)
+        Text_draw(self.gamesp3, 40, self.X+120, self.Y+130)
+        Text_draw(self.gamesp4, 40, self.X+120, self.Y+170)
+        Text_draw(self.gamesp5, 40, self.X+120, self.Y+210)
 
-        Text_draw(self.gamesp, 40, self.X+200, self.Y-30)
-        Text_draw(self.gamesp2, 40, self.X+200, self.Y+10)
-        Text_draw(self.gamesp3, 40, self.X+200, self.Y+50)
-        Text_draw(self.gamesp4, 40, self.X+200, self.Y+90)
-        Text_draw(self.gamesp5, 40, self.X+200, self.Y+130)
+        Text_draw(self.gamesw, 40, self.X+320, self.Y+50)
+        Text_draw(self.gamesw2, 40, self.X+320, self.Y+90)
+        Text_draw(self.gamesw3, 40, self.X+320, self.Y+130)
+        Text_draw(self.gamesw4, 40, self.X+320, self.Y+170)
+        Text_draw(self.gamesw5, 40, self.X+320, self.Y+210)
 
-        Text_draw(self.gamesw, 40, self.X+500, self.Y-30)
-        Text_draw(self.gamesw2, 40, self.X+500, self.Y+10)
-        Text_draw(self.gamesw3, 40, self.X+500, self.Y+50)
-        Text_draw(self.gamesw4, 40, self.X+500, self.Y+90)
-        Text_draw(self.gamesw5, 40, self.X+500, self.Y+130)
-
-        Text_draw(self.gamesl, 40, self.X+800, self.Y-30)
-        Text_draw(self.gamesl2, 40, self.X+800, self.Y+10)
-        Text_draw(self.gamesl3, 40, self.X+800, self.Y+50)
-        Text_draw(self.gamesl4, 40, self.X+800, self.Y+90)
-        Text_draw(self.gamesl5, 40, self.X+800, self.Y+130)
+        Text_draw(self.gamesl, 40, self.X+520, self.Y+50)
+        Text_draw(self.gamesl2, 40, self.X+520, self.Y+90)
+        Text_draw(self.gamesl3, 40, self.X+520, self.Y+130)
+        Text_draw(self.gamesl4, 40, self.X+520, self.Y+170)
+        Text_draw(self.gamesl5, 40, self.X+520, self.Y+210)
 
         for button in self.Buttons:
             button.Draw()
@@ -130,6 +124,37 @@ class Menu_bar:
         pygame.draw.line(game.Display, (100,100,100), (self.end_turn.X, self.end_turn.Y), (self.end_turn.X, self.Height), 2)
         pygame.draw.line(game.Display, (100,100,100), (self.pause_menu.X, self.pause_menu.Y), (self.pause_menu.X, self.Height), 2)
         pygame.draw.line(game.Display, (100,100,100), (self.X, self.Height), (self.Width, self.Height), 3)
+
+class Menu:
+    def __init__(self):
+        self.X = game.Width / 4
+        self.Y = game.Height / 10 + 100
+        self.Width = game.Width / 2
+        self.Level = "menu"
+
+        self.button_height = 50
+        self.button_color = (224,224,224)
+        self.button_color_hover = (160, 160, 160)
+
+        self.Buttons = [
+        Button(self.X+93, self.Y+240, 498, 69, self.Start, self.button_color, self.button_color_hover, "Start game"),\
+        Button(self.X+93, self.Y+320, 498, 69, self.Load, self.button_color, self.button_color_hover, "Resume game"),\
+        Button(self.X+93, self.Y+400, 498, 69, self.Instructions, self.button_color, self.button_color_hover, "Instructions"),\
+        Button(self.X+93, self.Y+480, 498, 69, self.Highscore, self.button_color, self.button_color_hover, "Highscore"),\
+        Button(self.X+870, self.Y+520, 63, 54, self.Instructions, self.button_color, self.button_color_hover, "S"),\
+        Button(self.X+946, self.Y+520, 61, 54, self.Exit, self.button_color, self.button_color_hover, "E")]
+
+    def Start(self): game.Level = "start"
+    def Menu(self): game.Level = "menu"
+    def Load(self): game.Level = "load"
+    def Highscore(self): game.Level = "highscore"
+    def Instructions(self): game.Level = "instructions"
+    def Exit(self): game.Level = "exit"
+
+    def Draw(self):
+        #text_draw
+        for button in self.Buttons:
+            button.Draw()
 
 class temp_card_holder:
     def __init__(self, name, id, desc, amount):
@@ -304,6 +329,7 @@ class Boat_menu:
                     self.m.Draw()
                     if self.s != None:
                         self.s.Draw()
+
 
 class Boat:
     def __init__(self, x, y, length, player="blue", name="unnamed boat"):
@@ -722,6 +748,17 @@ class Game:
                         if event.key == pygame.K_3:
                             hand.Activate()
                 self.draw()
+                self.Display.blit(boat,(0,0))
+                menu.Draw()
+                pygame.display.update()
+                self.tick()
+            elif self.Level == "highscore":
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        self.Exit = True
+                self.draw()
+                self.Display.blit(boat2,(0,0))
+                highscore.Draw()
                 pygame.display.update()
                 self.tick()
             else: self.Exit = True
@@ -732,7 +769,6 @@ def Text_draw(text, size, x, y, textcolor=(255,255,255)):
     game.Display.blit(screen_text, [x,y])
 
 game = Game()
-
 game.loop()
 
 pygame.quit()
