@@ -1,0 +1,70 @@
+class Instructions:
+    def __init__(self):
+        self.buttons_instructions=Container(10,100,400,700,50,0)
+        self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.General_instructions,"General_instructions", True, (0,0,255))
+        self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.Ship_instructions,"Ship_instructions", True,(0,0,0))
+        self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.Card_instructions,"Card_instructions", True,(0,0,0))
+        self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.back_instructions,"back_instructions", False,(0,0,0))
+        self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.backward_instructions,"backward_instructions", False,(0,0,0))
+        self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.forward_instructions,"forward_instructions", True,(0,0,0))
+        
+
+        self.buttons_rules=Container(10,400,400,700,50,0)
+        self.buttons_rules.Add_button((255,255,255),(200,200,200),self.General_rules,"General_rules",True,(0,0,0))
+        self.buttons_rules.Add_button((255,255,255),(200,200,200),self.Ship_rules,"Ship_rules",True,(0,0,0))
+        self.buttons_rules.Add_button((255,255,255),(200,200,200),self.Card_rules,"Card_rules",True,(0,0,0))
+        self.buttons_rules.Add_button((255,255,255),(200,200,200),self.back_rules,"back_rules",False,(0,0,0))
+        self.buttons_rules.Add_button((255,255,255),(200,200,200),self.forward_rules,"forward_rules",False,(0,0,0))
+
+        self.L_instructions=[\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Instructions list//generalinstructions.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Instructions list//shipinstructions.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Instructions list//cardinstructions1of2.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Instructions list//cardinstructions2of2.png"),(600,600))]
+
+        self.L_rules=[\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//generalrules.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//shiprules.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//shipstats1of2.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//shipstats2of2.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardrules1of2.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardrules2of2.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardinformation1of4.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardinformation2of4.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardinformation3of4.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardinformation4of4.png"),(600,600)),\
+        ]
+    
+
+    
+
+        self.current=0
+    #### buttons for rules
+    def forward_rules(self): self.L_rules[0]+1
+    def backward_rules(self): pass
+    def General_rules(self): pygame.draw.rect(game.Display,(0,0,0),(self.buttons_rules.Width+50,500,500,500))
+    def Ship_rules(self): pygame.draw.rect(game.Display,(200,0,0),(self.buttons_rules.Width+50,500,500,500))
+    def Card_rules(self): pygame.draw.rect(game.Display,(200,0,0),(self.buttons_rules.Width+50,500,500,500))
+    def back_rules(self): game.Level = "Rules"
+   
+    #### buttons for instructions
+    def General_instructions(self): game.Display.blit(self.L_instructions[0],(400,100))
+    def Ship_instructions(self):
+        game.Display.blit(self.L_instructions[1],(400,100))
+        self.current = 1
+    def Card_instructions(self):
+        game.Display.blit(self.L_instructions[2],(400,100))
+    def back_menu(self): game.Level = "menu"
+    def back_instructions(self): game.Level = "Instruction"
+    def forward_instructions(self):
+            self.current+=1
+            game.Display.blit(self.L_instructions[self.current],(400,100))
+            self.forward_instructions.Draw.constant=False
+    def backward_instructions(Self):pass
+        
+ 
+ 
+    
+
+    def Draw(self):
+        self.buttons_instructions.Draw()
