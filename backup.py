@@ -124,7 +124,6 @@ class Button:
             self.Function()
 class Instructions_Rules:
     def __init__(self):
-        game.Level="instructions_Rules"
         self.buttons_Instructions_Rules=Container(10,100,400,50,0)
         self.buttons_Instructions_Rules.Add_button((255,255,255),(200,200,200),self.B_Rules,"Rules",True)
         self.buttons_Instructions_Rules.Add_button((255,255,255),(200,200,200),self.B_Instructions,"Instructions",True)
@@ -134,7 +133,7 @@ class Instructions_Rules:
     def B_Instructions(self): pass
              #game.Level="Instructions"
     def Draw(self):
-            self.buttons_Instructions_Rules.Draw()
+        self.buttons_Instructions_Rules.Draw()
             
 class Instructions:
     def __init__(self):
@@ -346,7 +345,7 @@ class Menu:
     def Menu(self): game.Level = "menu"
     def Load(self): game.Level = "load"
     def Highscore(self): game.Level = "highscore"
-    def Instructions_Rules(self): Instructions_Rules.Draw()
+    def Instructions_Rules(self): game.Level = "instructions_Rules"
     def Rules(self): game.Level = "Rules"
     def Exit(self): game.Level = "exit"
     def Draw(self):
@@ -907,7 +906,6 @@ class Game:
         self.Level = "menu"
 
 
-
     def Draw(self): self.Display.fill((0,0,0))
     def tick(self): self.clock.tick(self.FPS)
     def loop(self):
@@ -918,26 +916,23 @@ class Game:
                         self.Exit = True   
                 self.Draw()
                 menu.Draw()
+                print("drawing menu")
                 pygame.display.update()
                 self.tick()
                 
-                 
-
-            
-            # elif self.Level == "instructions_Rules":
-            #       for event in pygame.event.get():
-            #           if event.type == pygame.QUIT:
-            #             self.Exit = True
-            #       self.Draw()
-            #       pygame.display.update()
-            #       self.tick() 
+            elif self.Level == "instructions_Rules":
+                  for event in pygame.event.get():
+                      if event.type == pygame.QUIT:
+                        self.Exit = True
+                  self.Draw()
+                  instructions_Rules.Draw()
+                  pygame.display.update()
+                  self.tick() 
                 
-            else: self.Exit = True
+            else:
+                print(self.Level)
+                self.Exit = True
         
-
-
-
-
 
 def Text_Draw(text, size, x, y, textcolor=(255,255,255)):
     font = pygame.font.SysFont(None, size)
@@ -951,8 +946,6 @@ game = Game()
 highscore = Highscore()
 menu = Menu()
 instructions_Rules=Instructions_Rules()
-
-
 
 # boat = pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//MAIN_MENU(2)//7.png")
 # boat2 = pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//HIGHSCORE_MENU(2)//1.png")
