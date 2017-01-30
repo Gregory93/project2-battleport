@@ -2,13 +2,13 @@ import pygame
 from module3 import *
 pygame.init()
 
-navy = (0,0,128)
+navy= (0,0,128)
 cobalt = (61,89,171)
 
 
 
 class Button1:
-    def __init__(self, x, y, width, height, function, color, hovercolor, text, constant=False, textsize=None, textcolor=(255,255,255)):
+    def __init__(self, x, y, width, height, function, color, hovercolor, text, constant=False, textsize=None, textcolor=(0,0,128)):
         self.X = x
         self.Y = y
         self.Width = width
@@ -60,7 +60,7 @@ class Button1:
         else:
             pygame.draw.rect(game.Display, self.Color, (self.X, self.Y, self.Width, self.Height))
             Text_Draw(self.Text,int(self.Text_size), self.X + 5, self.Y + self.Height / 5, self.Color_text)
-        #Text_Draw(text, size, x, y, textcolor=(255,255,255)):
+        #Text_Draw(text, size, x, y, textcolor=(0,0,128)):
 
         if self.Constant == True:
             if self.Pressed:
@@ -124,20 +124,22 @@ class Button:
             self.Function()
 class Instructions_Rules:
     def __init__(self):
+        self.Level="Instructions_Rules"
+        
         self.buttons_Instructions_Rules=Container(10,100,400,50,0)
-        self.buttons_Instructions_Rules.Add_button((255,255,255),(200,200,200),self.B_Rules,"Rules",True)
-        self.buttons_Instructions_Rules.Add_button((255,255,255),(200,200,200),self.B_Instructions,"Instructions",True)
-         
-    def B_Rules(self):pass
-                 
-    def B_Instructions(self): pass
-             #game.Level="Instructions"
+        self.buttons_Instructions_Rules.Add_button((0,0,128),(61,89,171),self.B_Instructions,"Instructions",False)
+        self.buttons_Instructions_Rules.Add_button((0,0,128),(61,89,171),self.B_Rules,"Rules",False)
+        self.buttons_Instructions_Rules.Add_button((0,0,128),(61,89,171),self.B_menu,"Menu",False)
+        
+    def B_menu(self):game.Level="menu"    
+    def B_Rules(self):game.Level="Rules"               
+    def B_Instructions(self): game.Level="Instructions"
     def Draw(self):
-        self.buttons_Instructions_Rules.Draw()
-            
+            self.buttons_Instructions_Rules.Draw()
+         
 class Instructions:
     def __init__(self):
-            
+            self.Level="Instructions"
             self.current=0
 
             self.L_instructions=[\
@@ -147,65 +149,86 @@ class Instructions:
             pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Instructions list//cardinstructions2of2.png"),(600,600))]
            
             self.buttons_instructions=Container(10,100,400,50,0)
-            self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.General_instructions,"General_instructions", True)
-            self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.Ship_instructions,"Ship_instructions", True)
-            self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.Card_instructions,"Card_instructions", True)
-            self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.back_instructions,"back_instructions", False)
-            self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.backward_instructions,"backward_instructions", False)
-            self.buttons_instructions.Add_button((255,255,255),(200,200,200),self.forward_instructions,"forward_instructions", True)        
-
-    def General_instructions(self): game.Display.blit(self.L_instructions[0],(400,100))
-    def Ship_instructions(self):
-                game.Display.blit(self.L_instructions[1],(400,100))
-    def Card_instructions(self):
-                        game.Display.blit(self.L_instructions[2],(400,100))
+            self.buttons_instructions.Add_button((0,0,128),(61,89,171),self.General_instructions,"General_instructions", False)
+            self.buttons_instructions.Add_button((0,0,128),(61,89,171),self.Ship_instructions,"Ship_instructions", False)
+            self.buttons_instructions.Add_button((0,0,128),(61,89,171),self.Card_instructions,"Card_instructions", False)  
+            self.buttons_instructions.Add_button((0,0,128),(61,89,171),self.forward_instructions,"Next",False)   
+            self.buttons_instructions.Add_button((0,0,128),(61,89,171),self.backward_instructions,"Previous", False)         
+            self.buttons_instructions.Add_button((0,0,128),(61,89,171),self.back_instructions,"Back", False)      
+    
+    def General_instructions(self):self.current=0
+         
+    def Ship_instructions(self):self.current=1
+    def Card_instructions(self):self.current=2
     def back_menu(self): game.Level = "menu"
-    def back_instructions(self): game.Level = "Instruction"
-
-    def forward_instructions(self):
-                            self.current+=1
-                            game.Display.blit(self.L_instructions[self.current],(400,100))
-                            
-    def backward_instructions(Self):
-        self.current 
-        self.current-=1
-        game.Display.blit(self.L_instructions[self.current],(400,100))
+    def back_instructions(self): game.Level = "Instructions_Rules"
+     ######
+    def forward_instructions(self):      #### currently hardcoded because it doesn't work with 'len(self.L_rules)'
+        if self.current<len(self.L_instructions)-1:
+            self.current+=1
+        elif self.current==len(self.L_instructions)-1:
+            self.current=len(self.L_instructions)-1
+    def backward_instructions(self):
+        if self.current>0:
+            self.current-=1
+        elif self.current==0:
+            self.current=0
+            self.current-=1
        
-            
+    
     def Draw(self):
            self.buttons_instructions.Draw()
+           game.Display.blit(self.L_instructions[self.current],(400,100)) 
 
 class Rules:
     def __init__(self):
-        self.L_rules=[\
-        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//generalrules.png"),(600,600)),\
-        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//shiprules.png"),(600,600)),\
+        
+        self.Level="Rules"
+        self.current1=0
+        self.L_Rules=[\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//generalRules.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//shipRules.png"),(600,600)),\
         pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//shipstats1of2.png"),(600,600)),\
         pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//shipstats2of2.png"),(600,600)),\
-        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardrules1of2.png"),(600,600)),\
-        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardrules2of2.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardRules1of2.png"),(600,600)),\
+        pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardRules2of2.png"),(600,600)),\
         pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardinformation1of4.png"),(600,600)),\
         pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardinformation2of4.png"),(600,600)),\
         pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardinformation3of4.png"),(600,600)),\
         pygame.transform.scale(pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//images//Rules list//cardinformation4of4.png"),(600,600)),\
         ]
         
-        def forward_rules(self): self.L_rules[0]+1
-        def backward_rules(self): pass
-        def General_rules(self): pygame.Draw.rect(game.Display,(0,0,0),(self.buttons_rules.Width+50,500,500,500))
-        def Ship_rules(self): pygame.Draw.rect(game.Display,(200,0,0),(self.buttons_rules.Width+50,500,500,500))
-        def Card_rules(self): pygame.Draw.rect(game.Display,(200,0,0),(self.buttons_rules.Width+50,500,500,500))
-        def back_rules(self): game.Level = "Rules"
+        self.buttons_Rules=Container(10,100,400,50,0)
+        self.buttons_Rules.Add_button((0,0,128),(61,89,171),self.General_Rules,"General_Rules",False)
+        self.buttons_Rules.Add_button((0,0,128),(61,89,171),self.Ship_Rules,"Ship_Rules",False)
+        self.buttons_Rules.Add_button((0,0,128),(61,89,171),self.Card_Rules,"Card_Rules",False)
+        self.buttons_Rules.Add_button((0,0,128),(61,89,171),self.forward_Rules,"next",False)
+        self.buttons_Rules.Add_button((0,0,128),(61,89,171),self.backward_Rules,"previous",False)
+        self.buttons_Rules.Add_button((0,0,128),(61,89,171),self.back_Rules,"Back",False)
         
-        self.buttons_rules=Container(10,400,400,50,0)
-        self.buttons_rules.Add_button((255,255,255),(200,200,200),self.General_rules,"General_rules",True)
-        self.buttons_rules.Add_button((255,255,255),(200,200,200),self.Ship_rules,"Ship_rules",True)
-        self.buttons_rules.Add_button((255,255,255),(200,200,200),self.Card_rules,"Card_rules",True)
-        self.buttons_rules.Add_button((255,255,255),(200,200,200),self.back_rules,"back_rules",False)
-        self.buttons_rules.Add_button((255,255,255),(200,200,200),self.forward_rules,"forward_rules",False)
+    
+
+    def forward_Rules(self):      #### currently hardcoded because it doesn't work with 'len(self.L_rules)'
+        if self.current1<len(self.L_Rules)-1:
+            self.current1+=1
+        elif self.current1==len(self.L_Rules)-1:
+            self.current1=len(self.L_Rules)-1
+    def backward_Rules(self):
+        if self.current1>0:
+            self.current1-=1
+        elif self.current1==0:
+            self.current1=0
         
-        def Draw(self):
-                 self.buttons_rules.Draw()
+    def General_Rules(self): self.current1=0
+    def Ship_Rules(self): self.current1=1
+    def Card_Rules(self): self.current1=4
+    def back_Rules(self): game.Level = "Instructions_Rules"
+        
+   
+        
+    def Draw(self):
+           self.buttons_Rules.Draw()
+           game.Display.blit(self.L_Rules[self.current1],(400,100))
 class Highscore:
     def __init__(self):
         self.X = game.Width / 4
@@ -239,12 +262,12 @@ class Highscore:
 
         self.button_height = 50
         self.button_color = (0,0,128)
-        self.button_color_hover = (0, 0, 180)
+        self.button_color_hover = (61,89,171)
 
         self.Buttons = [
         Button1(self.X+650, self.Y+500, 280, 50, self.Menu, self.button_color, self.button_color_hover, "back to main menu")]
-           # def __init__(self, x, y, width, height, function, color, hovercolor, text, constant=False, textsize=None, textcolor=(255,255,255)):
-           # #Text_Draw(text, size, x, y, textcolor=(255,255,255)):
+           # def __init__(self, x, y, width, height, function, color, hovercolor, text, constant=False, textsize=None, textcolor=(0,0,128)):
+           # #Text_Draw(text, size, x, y, textcolor=(0,0,128)):
     def Menu(self): game.Level = "menu"
 
     def Draw(self):
@@ -345,8 +368,7 @@ class Menu:
     def Menu(self): game.Level = "menu"
     def Load(self): game.Level = "load"
     def Highscore(self): game.Level = "highscore"
-    def Instructions_Rules(self): game.Level = "instructions_Rules"
-    def Rules(self): game.Level = "Rules"
+    def Instructions_Rules(self): game.Level="Instructions_Rules"
     def Exit(self): game.Level = "exit"
     def Draw(self):
         for button in self.Buttons:
@@ -359,11 +381,11 @@ class Menu_bar:
         self.Y = 0
         self.Width = game.Width
         self.Height = game.Height / 20
-        self.Color = cobalt
+        self.Color = (61,89,171)
 
         self.Player_holder = Player_holder(self.X+10, self.Y+8, 35)
-        self.end_turn = Button1(self.Width-150, self.Y, 150, self.Height, self.End_turn, navy, cobalt, "End turn", False, 35)
-        self.pause_menu = Button1(self.Width-300, self.Y, 150, self.Height, self.Menu, navy, cobalt, "Pause", False, 35)
+        self.end_turn = Button1(self.Width-150, self.Y, 150, self.Height, self.End_turn, (0,0,128), (61,89,171), "End turn", False, 35)
+        self.pause_menu = Button1(self.Width-300, self.Y, 150, self.Height, self.Menu, (0,0,128), (61,89,171), "Pause", False, 35)
 
     def End_turn(self):
         for b in (boat, boat2, boat3):
@@ -609,11 +631,11 @@ class Boat:
         self.Menu = grid.Menu
 
         self.Menu_actions = Container(self.Menu.Menu_x, self.Menu.Menu_y, 80, 100, 25, 0)
-        self.Menu_actions.Add_button(navy, cobalt, self.Show_submenu, "Movement")
-        self.Menu_actions.Add_button(navy, cobalt, self.Attack, "Attack")
+        self.Menu_actions.Add_button((0,0,128), (61,89,171), self.Show_submenu, "Movement")
+        self.Menu_actions.Add_button((0,0,128), (61,89,171), self.Attack, "Attack")
         self.Menu_actions_move = Container(self.Menu.Menu_x + self.Menu_actions.Width, self.Menu_actions.Y, 80, 100, 25, 0)
-        self.Menu_actions_move.Add_button(navy, cobalt, self.Move, "Move")
-        self.Menu_actions_move.Add_button(navy, cobalt, self.Stance_change, "stance")
+        self.Menu_actions_move.Add_button((0,0,128), (61,89,171), self.Move, "Move")
+        self.Menu_actions_move.Add_button((0,0,128), (61,89,171), self.Stance_change, "stance")
     
     def Tell_tile(self):
         if self.Stance == "defense":
@@ -728,9 +750,9 @@ class Boat_menu:
         
     def Add_boat(self, boat):
         self.Boat = boat
-        self.a = Button1(self.X, self.Y+90, 85, 30, self.Boat.Attack, navy, cobalt, "Attack")
-        self.m = Button1(self.X+85, self.Y+90, 85, 30, self.Boat.Move, navy, cobalt, "Move")
-        self.s = Button1(self.X+170, self.Y+90, 85, 30, self.Boat.Stance_change, navy, cobalt, "Stance")
+        self.a = Button1(self.X, self.Y+90, 85, 30, self.Boat.Attack, (0,0,128), (61,89,171), "Attack")
+        self.m = Button1(self.X+85, self.Y+90, 85, 30, self.Boat.Move, (0,0,128), (61,89,171), "Move")
+        self.s = Button1(self.X+170, self.Y+90, 85, 30, self.Boat.Stance_change, (0,0,128), (61,89,171), "Stance")
     
     def Clear(self):
         self.Boat = None
@@ -906,6 +928,7 @@ class Game:
         self.Level = "menu"
 
 
+
     def Draw(self): self.Display.fill((0,0,0))
     def tick(self): self.clock.tick(self.FPS)
     def loop(self):
@@ -916,25 +939,49 @@ class Game:
                         self.Exit = True   
                 self.Draw()
                 menu.Draw()
-                print("drawing menu")
                 pygame.display.update()
                 self.tick()
                 
-            elif self.Level == "instructions_Rules":
-                  for event in pygame.event.get():
-                      if event.type == pygame.QUIT:
-                        self.Exit = True
-                  self.Draw()
-                  instructions_Rules.Draw()
-                  pygame.display.update()
-                  self.tick() 
+                 
+
+            
+            elif self.Level == "Instructions_Rules":
+                   for event in pygame.event.get():
+                     if event.type == pygame.QUIT:
+                         self.Exit = True
+                   self.Draw()
+                   Instructions_Rules.Draw()
+                   pygame.display.update()
+                   self.tick() 
+
+            elif self.Level == "Instructions":
+                   for event in pygame.event.get():
+                     if event.type == pygame.QUIT:
+                         self.Exit = True
+                   self.Draw()
+                   Instructions.Draw()
+                   pygame.display.update()
+                   self.tick() 
+
+            elif self.Level == "Rules":
+                   for event in pygame.event.get():
+                     if event.type == pygame.QUIT:
+                         self.Exit = True
+                   self.Draw()
+                   Rules.Draw()
+                   pygame.display.update()
+                   self.tick() 
+
+            
                 
-            else:
-                print(self.Level)
-                self.Exit = True
+            else: self.Exit = True
         
 
-def Text_Draw(text, size, x, y, textcolor=(255,255,255)):
+
+
+
+
+def Text_Draw(text, size, x, y, textcolor=(0,0,128)):
     font = pygame.font.SysFont(None, size)
     screen_text = font.render(text, True, textcolor)
     game.Display.blit(screen_text, [x,y])
@@ -945,7 +992,12 @@ def Text_Draw(text, size, x, y, textcolor=(255,255,255)):
 game = Game()
 highscore = Highscore()
 menu = Menu()
-instructions_Rules=Instructions_Rules()
+Instructions_Rules=Instructions_Rules()
+Rules=Rules()
+Instructions=Instructions()
+
+
+
 
 # boat = pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//MAIN_MENU(2)//7.png")
 # boat2 = pygame.image.load("C://Users//erikv//Downloads//project2-battleport-Highscore//project2-battleport-Highscore//HIGHSCORE_MENU(2)//1.png")

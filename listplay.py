@@ -13,4 +13,4 @@ def next():
 next()
 
 
-print(L[i])
+print(len(L))
