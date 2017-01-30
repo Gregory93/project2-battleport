@@ -1,7 +1,7 @@
 import psycopg2
 
 try:
-    conn = psycopg2.connect("dbname=battleport user=postgres host=localhost password=gregory123")
+    conn = psycopg2.connect("dbname=battleport user=postgres host=localhost password=panter1234")
 except:
     print("cannot connect to the database")
 
