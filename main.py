@@ -5,7 +5,6 @@ import pygame
 import tkinter
 import psycopg2
 from tkinter import *
-from module3 import *
 
 try: conn = psycopg2.connect("dbname=battleport user=postgres host=localhost password=Mei_Juutje99")
 except: print("cannot connect to the database")
@@ -16,6 +15,44 @@ pygame.init()
 
 navy = (0,0,128)
 cobalt = (61,89,171)
+
+class Highscore:
+    def __init__(self):
+        self.X = game.Width / 4
+        self.Y = game.Height / 10 + 100
+        self.Width = game.Width / 2
+        self.Level = "highscore"
+
+        cur.execute("SELECT *, ROUND((CASE gw WHEN 0 THEN 1 ELSE gw END / CASE gl WHEN 0 THEN 1 ELSE gl END::numeric),2) FROM score")
+        self.p = cur.fetchall()
+
+        self.button_height = 50
+        self.button_color = (0,0,128)
+        self.button_color_hover = (0, 0, 180)
+
+        self.Buttons = [
+        Button1(self.X+650, self.Y+500, 280, 50, self.Menu, self.button_color, self.button_color_hover, "back to main menu")]
+
+    def Menu(self): game.Level = "menu"
+    def Draw(self):
+        y = self.Y + 50
+        for i in range(0, len(self.p)):
+            x = self.X - 215
+            Text_draw(str(i), 40, self.X-215, y)
+            x = x + 100
+            Text_draw(self.p[i][0], 40, self.X-115, y)
+            x = x + 210
+            Text_draw(str(self.p[i][1]), 40, self.X+125, y)
+            x = x + 205
+            Text_draw(str(self.p[i][2]), 40, self.X+330, y)
+            x = x + 200
+            Text_draw(str(self.p[i][3]), 40, self.X+530, y)
+            x = x + 220
+            Text_draw(str(self.p[i][4]), 40, self.X+750, y)
+            y = y + 50
+
+        for button in self.Buttons:
+            button.Draw()
 class Endgame:
     def __init__(self):
         self.X = game.Width / 4
@@ -73,7 +110,6 @@ class Endgame:
     def Load(self): game.Level = "load"
     def Instructions(self): game.Level = "instructions"
     def Exit(self): game.Level = "exit"
-
     def Draw(self):
         self.Player1 = game.Player1
         self.Player2 = game.Player2
@@ -294,82 +330,7 @@ class Player_holder:
     def Draw(self):
         Text_draw(self.Player + "\'s turn", self.Text_size, self.X, self.Y)
 
-class Highscore:
-    def __init__(self):
-        self.X = game.Width / 4
-        self.Y = game.Height / 10 + 100
-        self.Width = game.Width / 2
-        self.Level = "highscore"
 
-        self.name= row[0]
-        self.name2 = row2[0]  
-        self.name3 = row3[0]
-        self.name4 = row4[0]
-        self.name5 = row5[0]  
-
-        self.gamesp = str(row[1])
-        self.gamesp2 = str(row2[1])
-        self.gamesp3 = str(row3[1])
-        self.gamesp4 = str(row4[1])
-        self.gamesp5= str(row5[1])
-
-        self.gamesw = str(row[2])
-        self.gamesw2 = str(row2[2])
-        self.gamesw3 = str(row3[2])
-        self.gamesw4 = str(row4[2])
-        self.gamesw5= str(row5[2])
-
-        self.gamesl = str(row[3])
-        self.gamesl2 = str(row2[3])
-        self.gamesl3 = str(row3[3])
-        self.gamesl4 = str(row4[3])
-        self.gamesl5= str(row5[3])
-
-        self.button_height = 50
-        self.button_color = (0,0,128)
-        self.button_color_hover = (0, 0, 180)
-
-        self.Buttons = [
-        Button1(self.X+650, self.Y+500, 280, 50, self.Menu, self.button_color, self.button_color_hover, "back to main menu")]
-
-    def Menu(self): game.Level = "menu"
-    def Draw(self):
-        Text_draw("Highscore", 60, self.X+230, self.Y-150)
-        Text_draw("Name", 40, self.X-50, self.Y-80)
-        Text_draw("Played", 40, self.X+200, self.Y-80)
-        Text_draw("Won", 40, self.X+500, self.Y-80)
-        Text_draw("Lost", 40, self.X+800, self.Y-80)
-
-        Text_draw("1", 40, self.X-150, self.Y-30)
-        Text_draw("2", 40, self.X-150, self.Y+10)
-        Text_draw("3", 40, self.X-150, self.Y+50)
-
-        Text_draw(self.name, 40, self.X-50, self.Y-30)
-        Text_draw(self.name2, 40, self.X-50, self.Y+10)
-        Text_draw(self.name3, 40, self.X-50, self.Y+50)
-        Text_draw(self.name4, 40,  self.X-50, self.Y+90)
-        Text_draw(self.name5, 40,  self.X-50, self.Y+130)
-
-        Text_draw(self.gamesp, 40, self.X+200, self.Y-30)
-        Text_draw(self.gamesp2, 40, self.X+200, self.Y+10)
-        Text_draw(self.gamesp3, 40, self.X+200, self.Y+50)
-        Text_draw(self.gamesp4, 40, self.X+200, self.Y+90)
-        Text_draw(self.gamesp5, 40, self.X+200, self.Y+130)
-
-        Text_draw(self.gamesw, 40, self.X+500, self.Y-30)
-        Text_draw(self.gamesw2, 40, self.X+500, self.Y+10)
-        Text_draw(self.gamesw3, 40, self.X+500, self.Y+50)
-        Text_draw(self.gamesw4, 40, self.X+500, self.Y+90)
-        Text_draw(self.gamesw5, 40, self.X+500, self.Y+130)
-
-        Text_draw(self.gamesl, 40, self.X+800, self.Y-30)
-        Text_draw(self.gamesl2, 40, self.X+800, self.Y+10)
-        Text_draw(self.gamesl3, 40, self.X+800, self.Y+50)
-        Text_draw(self.gamesl4, 40, self.X+800, self.Y+90)
-        Text_draw(self.gamesl5, 40, self.X+800, self.Y+130)
-
-        for button in self.Buttons:
-            button.Draw()
 class Menu_bar:
     def __init__(self):
         self.X = 0
@@ -529,12 +490,8 @@ class Mines:
     def Activate(self, mineID, player):
         self.Mines[mineID].Activate(player)
     
-    def Light_up(self, mineID="all", showrange=False):
-        if mineID == "all":
-            for mine in self.Mines:
-                mine.Draw(showrange)
-        else:
-            self.Mines[mineID].Draw(showrange)
+    # def Light_up(self, mineID="all", showrange=False): FOR CARDS ONLY
+
 
 class Mine:
     def __init__(self, x, y):
@@ -584,12 +541,6 @@ class Mine:
     def Activate(self, player):
         self.Active = True
         self.Player = player
-    def Draw(self, showrange=False):
-        # TODO: Show a mine image on the tile
-        for y in range(self.Y - 1, self.Y+2):
-            for x in range(self.X - 1, self.X + 2):
-                if x == self.X and y == self.Y: grid.Tiles[x][y].Color = (100,0,0)
-                elif showrange: grid.Tiles[x][y].Color = (35,0,0)
 
 class Boat_menu:
     def __init__(self,x,y):
@@ -685,7 +636,7 @@ class Boat:
                                 if i != self.Y:
                                     grid.Tiles[x][i].Color = (50,0,0)
                                     if grid.Tiles[x][i].Boat != None and grid.Tiles[x][i].Boat.Player != self.Player:
-                                            grid.Tiles[x][y].Click(self.Attack_on, "hit")
+                                            grid.Tiles[x][y].Click(self.Attack_on, (50,0,0))
                 else:
                     for x in range(self.X, self.X + self.Length):
                         y = self.Y - self.Range_def
@@ -694,7 +645,7 @@ class Boat:
                                 if i != self.Y:
                                     grid.Tiles[x][i].Color = (50,0,0)
                                     if grid.Tiles[x][i].Boat != None and grid.Tiles[x][i].Boat.Player != self.Player:
-                                            grid.Tiles[x][y].Click(self.Attack_on, "hit")
+                                            grid.Tiles[x][y].Click(self.Attack_on, (50,0,0))
 
             else:
                 if self.Player == "blue":
@@ -739,17 +690,11 @@ class Boat:
 
                 while y <= self.Y + self.Moves:
                     for i in range(0,a):
-                        if not(x+b+i < 0) and not(x+b+i > 19) and not(y < 0) and not(y > 19 - self.Length + 1):
+                        if not(x+b+i < 0) and not(x+b+i > 19) and not(y < 0) and not(y > 19 - (self.Length - 1)):
                             if not(y == self.Y and x+b+i == self.X):
                                 if grid.Tiles[x+b+i][y].Boat == None or grid.Tiles[x+b+i][y].Boat == self:
-                                    if self.Player == "blue":
-                                        # TODO: RESTRICTION: when boat other than yourself is on the tile under the clickable Tile (check with forloop(y, y+(length-1))
-                                        # TODO: RESTRICTION: a boat should not be able to go over other boats 
-                                        grid.Tiles[x+b+i][y].Click(self.Move_to, (255,255,153), self)
-                                    else:
-                                        # TODO: RESTRICTION: when boat other than yourself is on the tile above the clickable Tile (check with forloop(y, y-(length-1))
-                                        # TODO: RESTRICTION: a boat should not be able to go over other boats 
-                                        grid.Tiles[x+b+i][y].Click(self.Move_to, (255,255,153), self)
+                                    # TODO: RESTRICTION: when boat other than yourself is on the tile under the clickable Tile (check with forloop(y, y+(length-1))
+                                    grid.Tiles[x+b+i][y].Click(self.Move_to, (255,255,153), self)
                     if y >= self.Y:
                         b += 1
                         a -= 2
@@ -769,14 +714,8 @@ class Boat:
                         if not(x+b+i < 0) and not(x+b+i > 19) and not(y < 0 + (self.Length - 1)) and not(y > 19):
                             if not(y == self.Y and x+b+i == self.X):
                                 if grid.Tiles[x+b+i][y].Boat == None or grid.Tiles[x+b+i][y].Boat == self:
-                                    if self.Player == "blue":
-                                        # RESTRICTION: when boat other than yourself is on the tile under the clickable Tile (check with forloop(y, y+(length-1))
-                                        # RESTRICTION: a boat should not be able to go over other boats 
-                                        grid.Tiles[x+b+i][y].Click(self.Move_to, (255,255,153), self)
-                                    else:
-                                        # RESTRICTION: when boat other than yourself is on the tile above the clickable Tile (check with forloop(y, y-(length-1))
-                                        # RESTRICTION: a boat should not be able to go over other boats 
-                                        grid.Tiles[x+b+i][y].Click(self.Move_to, (255,255,153), self)
+                                    # RESTRICTION: when boat other than yourself is on the tile above the clickable Tile (check with forloop(y, y-(length-1))
+                                    grid.Tiles[x+b+i][y].Click(self.Move_to, (255,255,153), self)
                     if y >= self.Y:
                         b += 1
                         a -= 2
@@ -884,8 +823,8 @@ class Boat:
             if self.Hover() and pygame.mouse.get_pressed()[0]:
                 grid.Clear() # TODO: upgrade this to a better version (only use this when a boat is using attack or move)
                 self.Menu.Add_boat(self)
-
-            if self.Took_damage:
+                
+        if self.Took_damage:
                 y = self.Pos[1] - self.Count * 2
                 pygame.Surface.blit(game.Display, pygame.image.load("images\\damage.png"), [self.Pos[0],y])
                 if not(self.Count > 15):
@@ -916,6 +855,10 @@ class Tile:
         self.Function = None
         self.Pressed = False
 
+        self.move = pygame.image.load("images\\geel20.png")
+        self.attack = pygame.image.load("images\\rood20.png")
+        self.attack_on = pygame.image.load("images\\rood25.png")
+
     def Clear(self):
         self.Boat = None
         self.Function = None
@@ -923,8 +866,7 @@ class Tile:
         self.Function_boat = None
     
     def Click(self, function, color, boat=None):
-        if self.Color != 'hit':
-            self.Color = color
+        self.Color = color
         self.Function = function
         self.Function_boat = boat
     
@@ -951,11 +893,22 @@ class Tile:
                     y = self.Y - (self.Function_boat.Length - 1) * self.Size
                 pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(self.Function_boat.Length) + "\\" + str(self.Function_boat.Stance) + "_red.png"), [x,y])
 
+    def Draw_boxes(self):
+        # minerange = pygame.image.load("images\\blauw20.png")
 
+        if self.Color == (50,0,0):
+            pygame.Surface.blit(game.Display, self.attack, (self.X, self.Y))
+        elif self.Color == (255,255,153):
+            pygame.Surface.blit(game.Display, self.move, (self.X, self.Y))
+        elif self.Color == "hit":
+            pygame.Surface.blit(game.Display, self.move, (self.X, self.Y))
+        # elif self.Color == (35,0,0) or self.Color == (100,0,0):
+        #     pygame.Surface.blit(game.Display, minerange, (self.X, self.Y))
     def Draw(self):
-        if self.Color != 'hit':
-            pygame.draw.rect(game.Display, self.Color, (self.X, self.Y, self.Size, self.Size))
-        pygame.draw.lines(game.Display, (100,100,100), True, [(self.X,self.Y), (self.X+self.Size,self.Y), (self.X+self.Size,self.Y+self.Size), (self.X,self.Y+self.Size)],2)
+        # mine = pygame.image.load("images\\mine.png")
+        # if self.Color == (100,0,0):
+        #     pygame.Surface.blit(game.Display, mine, (self.X, self.Y))
+        # pygame.draw.lines(game.Display, (100,100,100), True, [(self.X,self.Y), (self.X+self.Size,self.Y), (self.X+self.Size,self.Y+self.Size), (self.X,self.Y+self.Size)],2)
         if self.Hover():
             if self.Start:
 
@@ -1026,6 +979,8 @@ class Grid:
                 self.Tile_y = self.Tile_y + self.Tile_size
             self.Tile_x = self.Tile_x + self.Tile_size
             self.Tile_y = self.Y
+        
+        self.water = pygame.image.load("images\\grid.png")
 
     def Change_color(self, tile_x, tile_y, color):
         self.Tiles[tile_x][tile_y].Color = color
@@ -1036,6 +991,8 @@ class Grid:
                 self.Tiles[x][y].Clear()
 
     def Draw(self):
+        pygame.Surface.blit(game.Display, self.water, (self.X, self.Y))
+
         for y in range(0, self.Size):
             for x in range(0, self.Size):
                 self.Tiles[x][y].Draw()
@@ -1044,9 +1001,8 @@ class Grid:
     def Draw_over(self):
         for y in range(0, self.Size):
             for x in range(0, self.Size):
+                self.Tiles[x][y].Draw_boxes()
                 self.Tiles[x][y].Ghost()
-                if self.Tiles[x][y].Color == 'hit':
-                    pygame.Surface.blit(game.Display, pygame.image.load('images\\rood25.png'), [self.Tiles[x][y].X + 1, self.Tiles[x][y].Y + 1])
 
 class Animation:
     def __init__(self, x, y, imagefolder, imageamount, speed, animating=True):
@@ -1167,6 +1123,11 @@ class Game:
         self.Start = True
         self.Start_player = 1
 
+        self.bg = [\
+        pygame.image.load("images\\backgrounds\\menu.png"),\
+        pygame.image.load("images\\backgrounds\\highscore.png"),\
+        pygame.image.load('images\\backgrounds\\ready.png')]
+
     def Next(self):
         if self.Start_player == 1:
             self.Start_player += 1
@@ -1230,7 +1191,7 @@ class Game:
                     if event.type == pygame.QUIT:
                         self.Exit = True
                 self.Draw()
-                self.Display.blit(pygame.image.load("images\\backgrounds\\menu.png"),(0,0))
+                self.Display.blit(self.bg[0],(0,0))
                 menu.Draw()
                 pygame.display.update()
                 self.Tick()
@@ -1240,7 +1201,7 @@ class Game:
                     if event.type == pygame.QUIT:
                         self.Exit = True
                 self.Draw()
-                self.Display.blit(pygame.image.load("images\\backgrounds\\highscore.png"),(0,0))
+                self.Display.blit(self.bg[1],(0,0))
                 highscore.Draw()
                 pygame.display.update()
                 self.Tick()
@@ -1288,12 +1249,11 @@ class Game:
                         self.Exit = True
                 self.Draw()
                 if self.Interval:
-                    pygame.Surface.blit(self.Display, pygame.image.load('images\\backgrounds\\ready.png'), (0,0))
+                    pygame.Surface.blit(self.Display, self.bg[2], (0,0))
                     Text_draw(self.Interval_text, 50, self.Width / 2 - 100, self.Height - 150)
                     self.Interval_button.Draw()
                 elif self.Start:
                     grid.Draw()
-                    mines.Light_up("all", True)
                     grid.Draw_over()
                     menubar.Draw()
                     if self.Start_player == 1:
@@ -1304,7 +1264,6 @@ class Game:
                     player1.Draw()
                 else:
                     grid.Draw()
-                    mines.Light_up("all", True)
                     grid.Draw_over()
                     menubar.Draw()
                     player1.Draw()
@@ -1548,7 +1507,7 @@ def p1wins(): # DEBUGGING
 game = Game()
 test_button = Button1(10,10,100,100,p1wins,navy,cobalt, "endgame") # DEBUGGING
 ### INITS
-# highscore = Highscore()
+highscore = Highscore()
 endgame = Endgame()
 menu = Menu()
 
@@ -1595,3 +1554,6 @@ aluminium_hull = temp_card_holder("Aluminium Hull",19,"The used ship now has its
 jack_sparrow = temp_card_holder("Jack Sparrow",20,"Reveal opponent's hand, choose 1 of his cards and discard another 1.",1)
 
 game.Loop()
+
+pygame.quit()
+quit()
