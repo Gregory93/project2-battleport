@@ -296,7 +296,7 @@ class Highscore:
         self.Width = game.Width / 2
         self.Level = "highscore"
 
-        cur.execute("SELECT *, ROUND((CASE gw WHEN 0 THEN 1 ELSE gw END / CASE gl WHEN 0 THEN 1 ELSE gl END::numeric),2) FROM score")
+        cur.execute("SELECT *, ROUND((CASE gw WHEN 0 THEN 1 ELSE gw END / CASE gl WHEN 0 THEN 1 ELSE gl END::numeric),2) FROM score ORDER BY round desc")
         self.p = cur.fetchall()
 
         self.button_height = 50
