@@ -18,13 +18,17 @@ cobalt = (61,89,171)
 
 class Selection:
     def __init__(self):
-        self.X = grid.X + 700
+        self.X = grid.X + 550
         self.Y = grid.Y
         self.Card = None
         self.Color = None
+        self.Show_ships = True
         self.Pressed = False
+        self.Button_cancel = Button1(self.X + 50, self.Y + 440, 312, 50, self.Clear, navy, cobalt, "Cancel")
+        self.Button_use = Button1(self.X + 50, self.Y + 380, 312, 50, self.Use_function, navy, cobalt, "Use")
     
-    def Choose_card(self, card, playercolor):
+    def Choose_card(self, card, playercolor, ships=True):
+        self.Show_ships = ships
         self.Card = card
         self.Color = playercolor
     
@@ -39,78 +43,90 @@ class Selection:
             self.Pressed = False
             return True
         return False
+    def Clear(self):
+        self.Card = None
+        self.Color = None
+        game.Usecard = False
     
+    def Use_function(self, boat=None):
+        self.Card.Function(boat)
+        self.Card.Deck.Remove_card(self.Card.ID)
+        self.Clear()
     def Draw(self):
         if self.Card != None:
-            pygame.draw.rect(game.Display, (50,50,50), (self.X,self.Y, 500, 520))
-            pygame.Surface.blit(game.Display, self.Card.PNG_desc, (self.X + 20, self.Y + 20))
-            Text_draw("Choose the ship:", 40, grid.X + 900, grid.Y + 20)
-            x = self.X + 250
-            y = self.Y + 250
-            if self.Color == "blue":
-                if self.Hover(x,y,2):
-                    player1.Boats[3].Light()
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(2) + "\\attack.png"), (x,y))
-                    if self.Click():
-                        self.Card.Function(player1.Boats[3])
+            pygame.draw.rect(game.Display, (50,50,50), (self.X - 24, self.Y+50, 460, 450))
+            pygame.Surface.blit(game.Display, self.Card.PNG_desc, (self.X, self.Y))
+            x = self.X + 261/2
+            y = self.Y + 200
+            if self.Show_ships:
+                Text_draw("Choose the ship:", 40, self.X + 100, self.Y + 150)
+                if self.Color == "blue":
+                    if self.Hover(x,y,2):
+                        player1.Boats[3].Light()
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(2) + "\\attack.png"), (x,y))
+                        if self.Click():
+                            self.Use_function(player1.Boats[3])
+                    else:
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(2) + "\\attack.png"), (x,y))
+                    x += 50
+                    if self.Hover(x,y,3):
+                        player1.Boats[2].Light()
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack.png"), (x,y))
+                        if self.Click():
+                            self.Use_function(player1.Boats[2])
+                    else:
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack.png"), (x,y))
+                    x += 50
+                    if self.Hover(x,y,3):
+                        player1.Boats[1].Light()
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack.png"), (x,y))
+                        if self.Click():
+                            self.Use_function(player1.Boats[1])
+                    else:
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack.png"), (x,y))
+                    x += 50
+                    if self.Hover(x,y,4):
+                        player1.Boats[0].Light()
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(4) + "\\attack.png"), (x,y))
+                        if self.Click():
+                            self.Use_function(player1.Boats[0])
+                    else:
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(4) + "\\attack.png"), (x,y))
                 else:
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(2) + "\\attack.png"), (x,y))
-                x += 50
-                if self.Hover(x,y,3):
-                    player1.Boats[2].Light()
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack.png"), (x,y))
-                    if self.Click():
-                        self.Card.Function(player1.Boats[2])
-                else:
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack.png"), (x,y))
-                x += 50
-                if self.Hover(x,y,3):
-                    player1.Boats[1].Light()
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack.png"), (x,y))
-                    if self.Click():
-                        self.Card.Function(player1.Boats[1])
-                else:
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack.png"), (x,y))
-                x += 50
-                if self.Hover(x,y,4):
-                    player1.Boats[0].Light()
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(4) + "\\attack.png"), (x,y))
-                    if self.Click():
-                        self.Card.Function(player1.Boats[0])
-                else:
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(4) + "\\attack.png"), (x,y))
+                    if self.Hover(x,y,2):
+                        player2.Boats[3].Light()
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(2) + "\\attack_red.png"), (x,y))
+                        if self.Click():
+                            self.Use_function(player2.Boats[3])
+                    else:
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(2) + "\\attack_red.png"), (x,y))
+                    x += 50
+                    if self.Hover(x,y,3):
+                        player2.Boats[2].Light()
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack_red.png"), (x,y))
+                        if self.Click():
+                            self.Use_function(player2.Boats[2])
+                    else:
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack_red.png"), (x,y))
+                    x += 50
+                    if self.Hover(x,y,3):
+                        player2.Boats[1].Light()
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack_red.png"), (x,y))
+                        if self.Click():
+                            self.Use_function(player2.Boats[1])
+                    else:
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack_red.png"), (x,y))
+                    x += 50
+                    if self.Hover(x,y,4):
+                        player2.Boats[0].Light()
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(4) + "\\attack_red.png"), (x,y))
+                        if self.Click():
+                            self.Use_function(player2.Boats[0])
+                    else:
+                        pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(4) + "\\attack_red.png"), (x,y))
             else:
-                if self.Hover(x,y,2):
-                    player2.Boats[3].Light()
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(2) + "\\attack_red.png"), (x,y))
-                    if self.Click():
-                        self.Card.Function(player2.Boats[3])
-                else:
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(2) + "\\attack_red.png"), (x,y))
-                x += 50
-                if self.Hover(x,y,3):
-                    player2.Boats[2].Light()
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack_red.png"), (x,y))
-                    if self.Click():
-                        self.Card.Function(player2.Boats[2])
-                else:
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack_red.png"), (x,y))
-                x += 50
-                if self.Hover(x,y,3):
-                    player2.Boats[1].Light()
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack_red.png"), (x,y))
-                    if self.Click():
-                        self.Card.Function(player2.Boats[1])
-                else:
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(3) + "\\attack_red.png"), (x,y))
-                x += 50
-                if self.Hover(x,y,4):
-                    player2.Boats[0].Light()
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(4) + "\\attack_red.png"), (x,y))
-                    if self.Click():
-                        self.Card.Function(player2.Boats[0])
-                else:
-                    pygame.Surface.blit(game.Display, pygame.image.load("images\\boats\\" + str(4) + "\\attack_red.png"), (x,y))
+                self.Button_use.Draw()
+        self.Button_cancel.Draw()
 class Highscore:
     def __init__(self):
         self.X = game.Width / 4
@@ -168,11 +184,11 @@ class Endgame:
         Button1(self.X-300, self.Y+522, 100, 57, self.Menu, self.button_color, self.button_color_hover, "main"),\
         Button1(self.X-200, self.Y+400, 100, 57, self.Update_score, self.button_color, self.button_color_hover, "update")]
 
-    def End(self, name):
-        if name == game.Player1:
+    def End(self, player):
+        if player.Name == game.Player1:
             self.Player1 = game.Player1
             self.Player2 = game.Player2
-        elif name == game.Player2:
+        elif player.Name == game.Player2:
             self.Player1 = game.Player2
             self.Player2 = game.Player1
         else:
@@ -387,12 +403,13 @@ class Player:
         self.Clicked_button = False
 
         if self.Color == "blue":
-            self.Hand = Hand(grid.X + 700, grid.Y, self.Color)
-        else:
             self.Hand = Hand(grid.X + 700, grid.Y + 270, self.Color)
+        else:
+            self.Hand = Hand(grid.X + 700, grid.Y, self.Color)
 
         for i in range(0,2):
             self.Hand.Normal.Add_card()
+        
 
     def Start(self):
         if self.Boat_hand != None:
@@ -415,6 +432,11 @@ class Player:
     def Draw_hand(self):
         if not game.Start:
             self.Hand.Draw()
+    
+    def Activatecards(self):
+        self.Hand.Activate()
+    def Deactivatecards(self):
+        self.Hand.Deactivate()
 
 class Player_holder:
     def __init__(self, x, y, textsize):
@@ -496,6 +518,7 @@ class Card:
         self.Pressed = False
         self.PNG = pygame.image.load("images\\cards\\" + self.Name + "\\card.png")
         self.PNG_desc = pygame.image.load("images\\cards\\" + self.Name + "\\desc.png")
+        self.PNG_back = pygame.image.load("images\\cards\\" + self.Name + "\\back.png")
     
     def Hover(self):
         if self.X < pygame.mouse.get_pos()[0] < self.X + self.Width:
@@ -513,16 +536,15 @@ class Card:
                     self.Pressed = True
                 elif self.Pressed:
                     game.Usecard = True
-                    select.Choose_card(self, self.Player)
-                    self.Deck.Remove_card(self.ID)
+                    if self.Name == "Backup" or self.Name == "Rally": select.Choose_card(self, self.Player, False)
+                    else: select.Choose_card(self, self.Player)
                     self.Pressed = False
 
             else:
-                
                 pygame.Surface.blit(game.Display, self.PNG, (self.X, self.Y))
         else:
             # pygame.blit(game.Display, pygame.image.load("images\\cards\\" + self.name + "inactive.png"), [self.X, self.Y])
-            pygame.draw.rect(game.Display, (25,25,25), (self.X, self.Y, self.Width, self.Height))
+            pygame.Surface.blit(game.Display, self.PNG_back, (self.X, self.Y))
 
 class Deck:
     def __init__(self, x, y, player, limit):
@@ -561,9 +583,11 @@ class Deck:
     def Activate(self):
         for card in self.Cards:
             if card == "": break
-            else:
-                if card.Active: card.Active = False
-                else: card.Active = True
+            else: card.Active = True
+    def Deactivate(self):
+        for card in self.Cards:
+            if card =="": break
+            else: card.Active = False
 
     def Draw(self):
         for card in self.Cards:
@@ -585,6 +609,9 @@ class Hand:
     def Activate(self):
         for deck in self.Decks:
             deck.Activate()
+    def Deactivate(self):
+        for deck in self.Decks:
+            deck.Deactivate()
 
     def Draw(self):
         for deck in self.Decks:
@@ -715,6 +742,8 @@ class Boat:
         self.Took_damage = False
         self.Count = 0
         self.Placed = False
+
+        self.Alive = True
 
         self.Menu = grid.Menu
     
@@ -890,10 +919,9 @@ class Boat:
                 else:
                     self.Stance = "attack"
                     self.Pos[1] = grid.Tiles[self.X][self.Y - (self.Length - 1)].Y
+            
             if moved: self.Moves -= 1
             grid.Clear()
-            
-            self.Moves -= 1
             self.Menu.Clear()
     def Lose_health(self, damage):
         self.Health -= damage
@@ -944,7 +972,7 @@ class Boat:
                             player.Boat_hand = self
             elif self.Player == menubar.Player:
                 if self.Hover() and pygame.mouse.get_pressed()[0]:
-                    grid.Clear() # TODO: upgrade this to a better version (only use this when a boat is using attack or move)
+                    # grid.Clear() # TODO: upgrade this to a better version (only use this when a boat is using attack or move)
                     self.Menu.Add_boat(self)
                     
             if self.Took_damage:
@@ -957,6 +985,8 @@ class Boat:
                         self.Took_damage = False
 
         else:
+            self.Alive = False
+
             if self.Player == "blue":
                 pygame.Surface.blit(game.Display,  pygame.image.load('images\\boats\\' + str(self.Length) + '\\' + self.Stance + '_dead.png'), [self.Pos[0], self.Pos[1]])
             else:
@@ -1131,7 +1161,9 @@ class Grid:
         for y in range(0, self.Size):
             for x in range(0, self.Size):
                 self.Tiles[x][y].Draw_boxes()
-                self.Tiles[x][y].Ghost()
+        for a in self.Tiles:
+            for b in a:
+                b.Ghost()
 
 class Animation:
     def __init__(self, x, y, imagefolder, imageamount, speed, animating=True):
@@ -1256,7 +1288,8 @@ class Game:
         self.bg = [\
         pygame.image.load("images\\backgrounds\\menu.png"),\
         pygame.image.load("images\\backgrounds\\highscore.png"),\
-        pygame.image.load('images\\backgrounds\\ready.png')]
+        pygame.image.load('images\\backgrounds\\ready.png'),\
+        pygame.image.load('images\\backgrounds\\endgame.png')]
 
     def Next(self):
         if self.Start_player == 1:
@@ -1289,8 +1322,17 @@ class Game:
             grid.Menu.Clear()
             if menubar.Player_holder.Player == player1.Name:
                 player1.Hand.Normal.Add_card()
+                player1.Activatecards()
+                player2.Deactivatecards()
             else:
                 player2.Hand.Normal.Add_card()
+                player1.Deactivatecards()
+                player2.Activatecards()
+            for boat in set(player1.Boats + player2.Boats):
+                boat.Damage = 1
+                boat.Range_att = boat.Length
+                boat.Range_def = boat.Length + 1
+
         else:
             menubar.Player_holder.Change_player()
             self.Interval_text = menubar.Player_holder.Player + "\'s turn"
@@ -1347,7 +1389,7 @@ class Game:
                     if event.type == pygame.QUIT:
                         self.Exit = True
                 self.Draw()
-                # self.Display.blit(pygame.image.load("images\\backgrounds\\endgame.png"),(0,0))
+                pygame.Surface.blit(self.Display, self.bg[3], (0,0))
                 endgame.Draw()
                 pygame.display.update()
                 self.Tick()
@@ -1409,6 +1451,7 @@ class Game:
                     else:
                         player1.Draw_hand()
                         player2.Draw_hand()
+                    check_boats()
                 pygame.display.update()
                 self.Tick()
             elif self.Level == "debugging":
@@ -1436,6 +1479,20 @@ def Player_attributes():
         print(i)
         players.append(cur.fetchall()[0])
     return players
+def check_boats():
+    p2wins = True
+    for boat in player1.Boats:
+        if boat.Alive: p2wins = False
+
+    p1wins = True
+    for boat in player2.Boats:
+        if boat.Alive: p1wins = False
+    
+    if p1wins:
+        win(player1)
+    elif p2wins:
+        win(player2)
+
 def carddraw():
     print("drawing")
     r = random.randint(1,20)
@@ -1572,19 +1629,62 @@ def carddraw():
     elif r == 20:
     
         return carddraw()
-# activecard = carddraw()     <-- to get a new card
+
 def win(player):
-    game.Get_name_input()
     endgame.End(player)
     game.Level = "endgame"
 
 def card1(boat):
     boat.Damage += 1
+
 def card2(boat):
     boat.Range_def += 1
     boat.Range_att += 1
 
+def card3(boat):
+    boat.Range_def += 2
+    boat.Range_att += 2
+
+def card4(boat):
+    boat.Health += 1
+
+def card5(boat=None):
+    if player1.Name == menubar.Player_holder.Player:
+        player1.Hand.Normal.Add_card()
+        player1.Hand.Normal.Add_card()
+    else:
+        player2.Hand.Normal.Add_card()
+        player2.Hand.Normal.Add_card()
+
+def card6(boat):
+    boat.Moves += 1
+
+def card7(boat):
+    boat.Moves += 2
+
+def card8(boat=None):
+    if player1.Name == menubar.Player_holder.Player:
+        for boat in player1.Boats:
+            boat.Moves += 1
+    else:
+        for boat in player2.Boats:
+            boat.Moves += 1
+
+def card9(boat):
+    boat.Moves *= 2
+
+def card10(boat):
+    boat.Heatlh = boat.Length
+
+def card11(boat):
+    boat.Range_att += 2
+    boat.Range_def += 2
+
+def card12(boat):
+    boat.Moves *=2
+
 game = Game()
+
 ### INITS
 highscore = Highscore()
 endgame = Endgame()
@@ -1594,26 +1694,25 @@ Rules = Rules()
 Instructions = Instructions()
 
 ### CARD INITS
-
 #Offensive
 fmj_upgrade = temp_card_holder("FMJ Upgrade",1,"When this card is used, your next shot does +1 damage.",2, card1)
 rifling = temp_card_holder("Rifling",2,"When this card is used, your next shot has +1 range.",2, card2)
-# advanced_rifling = temp_card_holder("Advanced Rifling",3,"When this card is used, your next shot has +2 range.",2, None)
+advanced_rifling = temp_card_holder("Advanced Rifling",3,"When this card is used, your next shot has +2 range.",2, card3)
 
 #defensive
-reinforced_hull = temp_card_holder("Reinforced Hull",6,"Adds one HP to a friendly ship of your choice when this card is played.",2, None)
+reinforced_hull = temp_card_holder("Reinforced Hull",6,"Adds one HP to a friendly ship of your choice when this card is played.",2, card4)
 
 #Utility
-backup = temp_card_holder("Backup",10,"Draw two cards.",2, None)
-extra_fuel = temp_card_holder("Extra Fuel",11,"Select a friendly ship to make it move +1 step.",6, None)
-extra_fuel2 = temp_card_holder("Extra Fuel II",12,"Select a friendly ship to make it move +1 step.",4, None)
-rally = temp_card_holder("Rally",13,"All friendly ships can move +1 step.",1, None)
-adrenaline_rush = temp_card_holder("Adrenaline Rush",14,"Select a friendly ship to make its moveset x2.",4, None)
+backup = temp_card_holder("Backup",10,"Draw two cards.",2, card5)
+extra_fuel = temp_card_holder("Extra Fuel",11,"Select a friendly ship to make it move +1 step.",6, card6)
+extra_fuel2 = temp_card_holder("Extra Fuel II",12,"Select a friendly ship to make it move +1 step.",4, card7)
+rally = temp_card_holder("Rally",13,"All friendly ships can move +1 step.",1, card8)
+adrenaline_rush = temp_card_holder("Adrenaline Rush",14,"Select a friendly ship to make its moveset x2.",4, card9)
 
 #Special cards
-repair = temp_card_holder("Repair", 15, "Select a friendly ship to fully heal this ship (Base HP).",2, None)
-far_sight = temp_card_holder("Far Sight", 18, "The used ship now has +2 range.",1, None)
-aluminium_hull = temp_card_holder("Aluminium Hull",19,"The used ship now has its moveset x2.",1, None)
+repair = temp_card_holder("Repair", 15, "Select a friendly ship to fully heal this ship (Base HP).",2, card10)
+far_sight = temp_card_holder("Far Sight", 18, "The used ship now has +2 range.",1, card11)
+aluminium_hull = temp_card_holder("Aluminium Hull",19,"The used ship now has its moveset x2.",1, card12)
 
 ### GAME INITS
 menubar = Menu_bar()
